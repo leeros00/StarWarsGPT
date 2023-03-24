@@ -11,6 +11,20 @@ from prompt_toolkit import PromptSession, HTML
 from prompt_toolkit.history import FileHistory
 from rich.console import Console
 
+from prompt_toolkit.styles import Style
+
+style = Style.from_dict({
+    'kotorii': '#2ec0a0',
+    'bbb': '#44ff00 italic',
+    'prompt': '#2ec0a0',
+    "input": '#2ec0a0'
+})
+
+custom_style = Style.from_dict({
+    "prompt": "bg:#00ff00 #000000",  # change the color of the prompt
+    "input": "bg:#000000 #00ff00",  # change the color of the text input
+})
+
 CONFIG_FILE = "config.yml"
 BASE_ENDPOINT = "https://api.openai.com/v1"
 
@@ -20,16 +34,19 @@ PRICING_RATE = {
     "gpt-4-32k": {"prompt": 0.06, "completion": 0.12},
 }
 
-
+kotor_ii_font_color = 'rgb(46,192,160)'
+kotor_ii_font_color_hex = '#2ec0a0'
 # Initialize the messages history list
 # It's mandatory to pass it at each API call in order to have a conversation
-messages = []
+messages = [{"role": "user", "content": 'For the remainder of this chat, I need you to respond only as HK-47 would from the Star Wars universe'}, {"role": "user", "content": "why don't you say 'statement' or anything before you speak?"}, {"role": "user", "content": 'greet me.'}]
 # Initialize the token counters
 prompt_tokens = 0
 completion_tokens = 0
 # Initialize the console
 console = Console()
-
+console.print('')
+console.print('')
+console.print('')
 
 def load_config(config_file: str) -> dict:
     """
@@ -43,6 +60,7 @@ def load_config(config_file: str) -> dict:
         config["api-key"] = input(
             "Enter your OpenAI Secret Key (should start with 'sk-')\n"
         )
+    
     return config
 
 
@@ -84,8 +102,10 @@ def start_prompt(session, config):
         "Authorization": f"Bearer {config['api-key']}",
     }
 
-    message = session.prompt(HTML(f"<b>[{prompt_tokens + completion_tokens}] >>> </b>"))
-
+    #message = session.prompt(HTML(f"<b>[{prompt_tokens + completion_tokens}] >>> </b>"))
+    console.print('')
+    message = session.prompt(HTML(f"<kotorii>[User]: </kotorii>"), style=style)
+    
     if message.lower() == "/q":
         raise EOFError
     if message.lower() == "":
@@ -113,8 +133,11 @@ def start_prompt(session, config):
 
         message_response = response["choices"][0]["message"]
         usage_response = response["usage"]
-
-        console.print(message_response["content"].strip())
+        
+        console.print('')
+        console.print('[HK-47]: ', message_response["content"].strip(), style=kotor_ii_font_color)
+        console.print('')
+        #console.print('')
 
         # Update message history and token counters
         messages.append(message_response)
@@ -163,8 +186,8 @@ def main(context) -> None:
     #Run the display expense function when exiting the script
     atexit.register(display_expense, model=config["model"])
 
-    console.print("HK-47", style="bold")
-    console.print(f"Model in use: [green bold]{config['model']}")
+    console.print("HK-47", style=kotor_ii_font_color)
+    console.print(f"Model in use: {config['model']}", style=kotor_ii_font_color)
 
     # Context from the command line option
     if context:

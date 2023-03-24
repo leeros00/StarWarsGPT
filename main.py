@@ -2,7 +2,7 @@ import openai
 import prompt_toolkit
 
 # Set up the OpenAI API client
-openai.api_key = "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"
+openai.api_key = ''
 
 # Define the conversation function
 def converse(prompt):
