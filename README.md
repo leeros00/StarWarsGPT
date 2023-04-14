@@ -1,4 +1,4 @@
-# ChattyHK-47
+# StarWarsGPT
 
 StarWarsGPT is a Star Wars-inspired CLI wrapper for interacting with OpenAI's ChatGPT API. Simply choose your favorite character from the Star Wars universe and the CLI will respond accordingly.
 
